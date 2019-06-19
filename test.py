@@ -1,7 +1,8 @@
 import pygame
+import constants as const
 
 pygame.init()
-screen = pygame.display.set_mode((400, 300))
+screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
 done = False
 is_blue = True
 x = 30
