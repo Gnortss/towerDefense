@@ -1,4 +1,5 @@
 import math
+from pygame.math import Vector2
 
 
 class Enemy:
@@ -12,7 +13,8 @@ class Enemy:
         self.height = height
         self.animation_count = 0
         self.health = 100
-        self.velocity = 1.5
+        self.velocity = Vector2(0, 0)
+        self.max_speed = 1
         self.path = path
         self.path_pos = 0
         self.img = None
@@ -24,28 +26,23 @@ class Enemy:
         if self.animation_count >= len(self.imgs):
             self.animation_count = 0
 
-        window.blit(self.img, (self.x, self.y))
+        window.blit(self.img, (self.x + int(self.width/2), self.y + int(self.height/2)))
 
     def move(self):
         if self.path_pos + 1 >= len(self.path):
-            return
-
-        dist = math.sqrt((self.x - self.path[self.path_pos + 1][0])**2 + (self.y - self.path[self.path_pos + 1][1])**2)
-
-        if dist < self.velocity:
+            return False
+        target = Vector2(*self.path[self.path_pos + 1])
+        current = Vector2(self.x, self.y)
+        heading = target - current
+        distance = heading.magnitude()  # Distance to target
+        heading.normalize_ip()
+        if distance <= 5:
             self.path_pos += 1
 
-        if self.path_pos + 1 >= len(self.path):
-            return
-
-        x1, y1 = self.x, self.y
-        x2, y2 = self.path[self.path_pos + 1]
-
-        angle = math.atan2(y2 - y1, x2 - x1)  # In Radians
-        if angle < 0:
-            angle += 2 * math.pi
-        self.x = int(self.x + math.cos(angle) * self.velocity)
-        self.y = int(self.y + math.sin(angle) * self.velocity)
+        self.velocity = heading * self.max_speed
+        self.x += self.velocity.x
+        self.y += self.velocity.y
+        return True
 
     def hit(self, damage):
         self.health -= damage

@@ -31,15 +31,21 @@ class Level:
         self.enemies = []
         self.enemies_spawned = 0
         self.last_spawn_time = time.time()
+        self.wait_before_spawning = 3
         self.current_wave = 0
         self.paused = True
         self.paused_at = time.time()
 
     def update(self):
         if not self.paused:
-            # Move enemies
+            # Move enemies and delete the ones out of the screen
+            to_del = []
             for enemy in self.enemies:
-                enemy.move()
+                if not enemy.move():
+                    to_del.append(enemy)
+            for enemy in to_del:
+                self.enemies.remove(enemy)
+            print(len(self.enemies))
             # Check if we have to spawn an enemy
             self.spawn_next_enemy()
 
@@ -70,6 +76,9 @@ class Level:
             enemy.draw(window)
 
     def spawn_next_enemy(self):
+        if self.enemies_spawned == 0 and time.time() - self.last_spawn_time < self.wait_before_spawning:
+            return
+
         # Find the last group we were spawning from
         count = 0
         group = 0
