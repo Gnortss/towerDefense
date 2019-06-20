@@ -1,18 +1,25 @@
+import pygame
+import os
 import constants as const
+from cell_type import CellType
 
 
 class Map:
+    imgs = {}
 
     def __init__(self, grid):
+        self.imgs['path'] = pygame.image.load(os.path.join('images/textures/path_texture.png'))
+        self.imgs['path'] = pygame.transform.scale(self.imgs['path'], (const.CELL_WIDTH - 1, const.CELL_HEIGHT - 1))
+
         self.grid = []
         self.width = len(grid[0])
         self.height = len(grid)
         for i, row in enumerate(grid):
             for j, cell in enumerate(row):
-                x = i * const.CELL_WIDTH
-                y = j * const.CELL_HEIGHT
-                grid.append({
-                    "info": (cell, 0),
+                x = j * const.CELL_WIDTH
+                y = i * const.CELL_HEIGHT
+                self.grid.append({
+                    "info": (CellType(cell), 0),
                     "coords": (x, y)
                 })
 
@@ -30,3 +37,10 @@ class Map:
             "info": info,
             "coords": coords
         }
+
+    def draw(self, window):
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                t = self.get_cell_type(x, y)
+                if t == CellType.PATH:
+                    window.blit(self.imgs['path'], self.get_cell_coords(x, y))
