@@ -1,44 +1,24 @@
-# import pygame
-# import constants as const
-#
-# pygame.init()
-# screen = pygame.display.set_mode((const.SCREEN_WIDTH, const.SCREEN_HEIGHT))
-# done = False
-# is_blue = True
-# x = 30
-# y = 30
-#
-# clock = pygame.time.Clock()
-# while not done:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             done = True
-#         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-#             is_blue = not is_blue
-#
-#     pressed = pygame.key.get_pressed()
-#     if pressed[pygame.K_UP]:
-#         y -= 3
-#     if pressed[pygame.K_DOWN]:
-#         y += 3
-#     if pressed[pygame.K_LEFT]:
-#         x -= 3
-#     if pressed[pygame.K_RIGHT]:
-#         x += 3
-#
-#     screen.fill((0, 0, 0))
-#     if is_blue:
-#         color = (0, 128, 255)
-#     else:
-#         color = (255, 100, 0)
-#     pygame.draw.rect(screen, color, pygame.Rect(x, y, 60, 60))
-#
-#     pygame.display.flip()
-#     clock.tick(60)
+#!/usr/bin/env python
+import pygame
 
-for i in range(0, 10):
-    if i > 5:
-        if i == 7:
-            break
+LEFT = 1
+RIGHT = 3
 
-    print(i)
+running = 1
+screen = pygame.display.set_mode((320, 200))
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = 0
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == LEFT:
+            print("You pressed the left mouse button at (%d, %d)" % event.pos)
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == LEFT:
+            print("You released the left mouse button at (%d, %d)" % event.pos)
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == RIGHT:
+            print("You pressed the right mouse button at (%d, %d)" % event.pos)
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == RIGHT:
+            print("You released the right mouse button at (%d, %d)" % event.pos)
+
+    screen.fill((0, 0, 0))
+    pygame.display.flip()

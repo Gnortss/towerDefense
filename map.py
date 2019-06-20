@@ -38,6 +38,12 @@ class Map:
             "coords": coords
         }
 
+    def set_cell_type(self, x, y, type):
+        self.grid[y * self.width + x] = {
+            "info": (type, self.get_cell_info(x, y)[1]),
+            "coords": self.get_cell_coords(x, y)
+        }
+
     def draw(self, window):
         for x in range(0, self.width):
             for y in range(0, self.height):

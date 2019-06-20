@@ -10,6 +10,7 @@ class Game:
         self.levels = ["levels/level01.json", "levels/level01.json"]
         self.current_level = 0
         self.level = Level(self.levels[self.current_level])
+        self.placing = False
 
     def run(self):
         run = True
@@ -24,6 +25,16 @@ class Game:
                         run = False
                     if event.key == pygame.K_p:
                         self.level.toggle_pause()
+                    if event.key == pygame.K_1:
+                        self.create_defense(1)
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if self.placing:  # 1 is left click
+                        # print("Confirming placement")
+                        self.confirm_placing()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                    if self.placing:  # 3 is right click
+                        # print("Canceling placement")
+                        self.cancel_placing()
 
             self.update()
             self.draw()
@@ -36,6 +47,25 @@ class Game:
 
     def update(self):
         self.level.update()
+
+    def create_defense(self, defense_type):
+        if not self.placing:
+            self.placing = self.level.create_defense(defense_type)
+            # print("Trying to place defense: ", self.placing)
+
+    def confirm_placing(self):
+        if self.level.confirm_placing():
+            self.placing = False
+            # print("CONFIRMED")
+        # else:
+            # print("CAN'T CONFIRM")
+
+    def cancel_placing(self):
+        if self.level.cancel_placing():
+            self.placing = False
+        #     print("CANCELED")
+        # else:
+        #     print("CAN'T CANCEL")
 
 
 if __name__ == "__main__":

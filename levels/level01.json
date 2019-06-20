@@ -2,7 +2,7 @@
   "name": "level 01",
   "background": "bg_grass.jpg",
   "lives": 5,
-  "coins": 100,
+  "coins": 1000,
   "waves": [
     {
       "name": "Wave 1",

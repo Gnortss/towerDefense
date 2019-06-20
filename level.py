@@ -5,6 +5,8 @@ import time
 from map import Map
 import constants as const
 from creeper import Creeper
+from turret_tower import TurretTower
+from cell_type import CellType
 
 
 class Level:
@@ -35,6 +37,7 @@ class Level:
         self.current_wave = 0
         self.paused = True
         self.paused_at = time.time()
+        self.placing = None
 
     def update(self):
         if not self.paused:
@@ -45,9 +48,12 @@ class Level:
                     to_del.append(enemy)
             for enemy in to_del:
                 self.enemies.remove(enemy)
-            print(len(self.enemies))
             # Check if we have to spawn an enemy
             self.spawn_next_enemy()
+
+        # Clip defense which the player is placing to the nearest cell
+        if self.placing is not None:
+            self.placing.move_to(*pygame.mouse.get_pos())
 
     def reset(self):
         with open(self.level_config_file) as file:
@@ -64,8 +70,12 @@ class Level:
 
         self.defenses = []
         self.enemies = []
+        self.enemies_spawned = 0
+        self.last_spawn_time = time.time()
         self.current_wave = 0
         self.paused = True
+        self.paused_at = time.time()
+        self.placing = None
 
     def draw(self, window):
         window.blit(self.bg, (0, 0))
@@ -74,6 +84,14 @@ class Level:
         # Draw enemies
         for enemy in self.enemies:
             enemy.draw(window)
+
+        # Draw defenses
+        for defense in self.defenses:
+            defense.draw(window)
+
+        # Draw defense which is currently placing
+        if self.placing is not None:
+            self.placing.draw(window)
 
     def spawn_next_enemy(self):
         if self.enemies_spawned == 0 and time.time() - self.last_spawn_time < self.wait_before_spawning:
@@ -98,6 +116,56 @@ class Level:
                     self.enemies.append(Creeper(*self.path[0], const.CELL_WIDTH, const.CELL_HEIGHT, self.path))
                     self.enemies_spawned += 1
                     self.last_spawn_time = time.time()
+
+    def create_defense(self, defense_type):
+        if self.placing is not None:
+            return False
+
+        if defense_type == 1:
+            self.placing = TurretTower()
+
+            if self.placing.cost > self.coins:
+                # TODO: notify player that he hasn't got enough coins
+                self.placing = None
+                return False
+        return True
+
+    def confirm_placing(self):
+        if self.placing is None:  # Can't confirm if player isn't placing anything
+            return False
+        # TODO: check if it's a valid spot --> if not then return False
+        if not self.is_in_valid_spot(self.placing):  # Returns false when defense is not in a valid spot
+            # print("Not a valid spot")
+            return False
+
+        # Set cell types where defense will be placed
+        sx, sy = self.placing.x - (self.placing.width // 2), self.placing.y - (self.placing.height // 2)
+        for i in range(0, self.placing.width):
+            for j in range(0, self.placing.height):
+                self.map.set_cell_type(sx + i, sy + j, CellType.DEFENSE)
+
+        self.placing.place()
+        self.defenses.append(self.placing)
+        # print("Coins: ", self.coins, "-->", self.coins - self.placing.cost)
+        self.coins -= self.placing.cost
+        self.placing = None
+        return True
+
+    def cancel_placing(self):
+        if self.placing is None:
+            return False
+        self.placing = None
+        return True
+
+    def is_in_valid_spot(self, defense):
+        is_valid = True
+        sx, sy = defense.x - (defense.width // 2), defense.y - (defense.height // 2)
+        for i in range(0, defense.width):
+            for j in range(0, defense.height):
+                # print(sx + i, sy + j, self.map.get_cell_type(sx + i, sy + j))
+                if self.map.get_cell_type(sx + i, sy + j) != CellType.FREE:
+                    is_valid = False
+        return is_valid
 
     def pause(self):
         self.paused_at = time.time()
