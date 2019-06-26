@@ -1,3 +1,4 @@
+import pygame
 import constants as const
 
 
@@ -14,11 +15,27 @@ class Defense:
         self.upgrade_cost = []
         self.sell_cost = []
         self.placed = False
+        self.selected = True
 
     def draw(self, window):
-        cx = self.x - int(self.width/2)
-        cy = self.y - int(self.height/2)
-        window.blit(self.img, (cx * const.CELL_WIDTH, cy * const.CELL_HEIGHT))
+        top_left_x = (self.x - self.width//2) * const.CELL_WIDTH
+        top_left_y = (self.y - self.height//2) * const.CELL_HEIGHT
+
+        if self.selected:
+            sw = int(self.range * 2)
+            sh = sw
+            cx = int(self.x * const.CELL_WIDTH + const.CELL_WIDTH//2)
+            cy = int(self.y * const.CELL_HEIGHT + const.CELL_HEIGHT//2)
+            nx = cx - sw // 2
+            ny = cy - sh // 2
+            surface = pygame.Surface((sw, sh))
+            surface.set_colorkey((0, 0, 0))
+            surface.set_alpha(128)
+            pygame.draw.circle(surface, (230, 0, 0), (sw // 2, sh // 2), int(self.range) - 2)
+            pygame.draw.circle(surface, (230, 100, 100), (sw // 2, sh // 2), int(self.range), 3)
+            window.blit(surface, (nx, ny))
+
+        window.blit(self.img, (top_left_x, top_left_y))
 
     def move_to(self, x, y):
         """

@@ -48,5 +48,5 @@ class Map:
         for x in range(0, self.width):
             for y in range(0, self.height):
                 t = self.get_cell_type(x, y)
-                if t == CellType.PATH:
+                if t == CellType.PATH or t == CellType.TRAP:
                     window.blit(self.imgs['path'], self.get_cell_coords(x, y))

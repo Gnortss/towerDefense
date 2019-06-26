@@ -6,7 +6,9 @@ from map import Map
 import constants as const
 from creeper import Creeper
 from turret_tower import TurretTower
+from spikes_trap import SpikesTrap
 from cell_type import CellType
+from defense_type import DefenseType
 
 
 class Level:
@@ -117,23 +119,30 @@ class Level:
                     self.enemies_spawned += 1
                     self.last_spawn_time = time.time()
 
-    def create_defense(self, defense_type):
+    def create_defense(self, defense_id):
         if self.placing is not None:
             return False
 
-        if defense_type == 1:
+        if defense_id == 1:
             self.placing = TurretTower()
 
             if self.placing.cost > self.coins:
                 # TODO: notify player that he hasn't got enough coins
                 self.placing = None
                 return False
+        elif defense_id == 2:
+            self.placing = SpikesTrap()
+
+            if self.placing.cost > self.coins:
+                # TODO: notify player that he hasn't got enough coins
+                self.placing = None
+                return False
+
         return True
 
     def confirm_placing(self):
         if self.placing is None:  # Can't confirm if player isn't placing anything
             return False
-        # TODO: check if it's a valid spot --> if not then return False
         if not self.is_in_valid_spot(self.placing):  # Returns false when defense is not in a valid spot
             # print("Not a valid spot")
             return False
@@ -142,7 +151,10 @@ class Level:
         sx, sy = self.placing.x - (self.placing.width // 2), self.placing.y - (self.placing.height // 2)
         for i in range(0, self.placing.width):
             for j in range(0, self.placing.height):
-                self.map.set_cell_type(sx + i, sy + j, CellType.DEFENSE)
+                if self.placing.type == DefenseType.TOWER:
+                    self.map.set_cell_type(sx + i, sy + j, CellType.TOWER)
+                elif self.placing.type == DefenseType.TRAP:
+                    self.map.set_cell_type(sx + i, sy + j, CellType.TRAP)
 
         self.placing.place()
         self.defenses.append(self.placing)
@@ -163,7 +175,9 @@ class Level:
         for i in range(0, defense.width):
             for j in range(0, defense.height):
                 # print(sx + i, sy + j, self.map.get_cell_type(sx + i, sy + j))
-                if self.map.get_cell_type(sx + i, sy + j) != CellType.FREE:
+                if defense.type == DefenseType.TOWER and self.map.get_cell_type(sx + i, sy + j) != CellType.FREE:
+                    is_valid = False
+                elif defense.type == DefenseType.TRAP and self.map.get_cell_type(sx + i, sy + j) != CellType.PATH:
                     is_valid = False
         return is_valid
 

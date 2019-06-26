@@ -27,6 +27,8 @@ class Game:
                         self.level.toggle_pause()
                     if event.key == pygame.K_1:
                         self.create_defense(1)
+                    if event.key == pygame.K_2:
+                        self.create_defense(2)
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     if self.placing:  # 1 is left click
                         # print("Confirming placement")
@@ -48,9 +50,9 @@ class Game:
     def update(self):
         self.level.update()
 
-    def create_defense(self, defense_type):
+    def create_defense(self, defense_id):
         if not self.placing:
-            self.placing = self.level.create_defense(defense_type)
+            self.placing = self.level.create_defense(defense_id)
             # print("Trying to place defense: ", self.placing)
 
     def confirm_placing(self):
