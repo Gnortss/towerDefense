@@ -43,16 +43,17 @@ class Level:
 
     def update(self):
         if not self.paused:
-            # Move enemies and delete the ones out of the screen
+            # Move enemies and delete the ones that are at the end of a path
             to_del = []
             for enemy in self.enemies:
                 if not enemy.move():
                     to_del.append(enemy)
             for enemy in to_del:
                 self.enemies.remove(enemy)
+                self.lives -= 1
             # Check if we have to spawn an enemy
             self.spawn_next_enemy()
-
+            print(self.lives)
         # Clip defense which the player is placing to the nearest cell
         if self.placing is not None:
             self.placing.move_to(*pygame.mouse.get_pos())
@@ -84,7 +85,7 @@ class Level:
         # Draw objects on the map (path, obstacles)
         self.map.draw(window)
         # Draw enemies
-        for enemy in self.enemies:
+        for enemy in reversed(self.enemies):
             enemy.draw(window)
 
         # Draw defenses
@@ -124,14 +125,14 @@ class Level:
             return False
 
         if defense_id == 1:
-            self.placing = TurretTower()
+            self.placing = TurretTower(self)
 
             if self.placing.cost > self.coins:
                 # TODO: notify player that he hasn't got enough coins
                 self.placing = None
                 return False
         elif defense_id == 2:
-            self.placing = SpikesTrap()
+            self.placing = SpikesTrap(self)
 
             if self.placing.cost > self.coins:
                 # TODO: notify player that he hasn't got enough coins

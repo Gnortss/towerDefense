@@ -5,7 +5,7 @@ import constants as const
 class Defense:
     img = None
 
-    def __init__(self, width, height):
+    def __init__(self, _level, width, height):
         self.x = 0
         self.y = 0
         self.width = width
@@ -16,12 +16,20 @@ class Defense:
         self.sell_cost = []
         self.placed = False
         self.selected = True
+        self._level = _level
 
     def draw(self, window):
         top_left_x = (self.x - self.width//2) * const.CELL_WIDTH
         top_left_y = (self.y - self.height//2) * const.CELL_HEIGHT
 
         if self.selected:
+            if not self.placed and not self._level.is_in_valid_spot(self):
+                color1 = (255, 0, 0)
+                color2 = (255, 100, 100)
+            else:
+                color1 = (0, 0, 255)
+                color2 = (100, 100, 255)
+
             sw = int(self.range * 2)
             sh = sw
             cx = int(self.x * const.CELL_WIDTH + const.CELL_WIDTH//2)
@@ -30,9 +38,9 @@ class Defense:
             ny = cy - sh // 2
             surface = pygame.Surface((sw, sh))
             surface.set_colorkey((0, 0, 0))
-            surface.set_alpha(128)
-            pygame.draw.circle(surface, (230, 0, 0), (sw // 2, sh // 2), int(self.range) - 2)
-            pygame.draw.circle(surface, (230, 100, 100), (sw // 2, sh // 2), int(self.range), 3)
+            surface.set_alpha(80)
+            pygame.draw.circle(surface, color1, (sw // 2, sh // 2), int(self.range) - 2)
+            pygame.draw.circle(surface, color2, (sw // 2, sh // 2), int(self.range), 3)
             window.blit(surface, (nx, ny))
 
         window.blit(self.img, (top_left_x, top_left_y))
