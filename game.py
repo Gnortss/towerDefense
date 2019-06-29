@@ -39,16 +39,11 @@ class Game:
                         self.cancel_placing()
 
             self.update()
-            self.draw()
         pygame.quit()
 
-    def draw(self):
-        self.level.draw(self.window)
-
-        pygame.display.update()
-
     def update(self):
-        self.level.update()
+        self.level.update(self.window)
+        pygame.display.update()
 
     def create_defense(self, defense_id):
         if not self.placing:

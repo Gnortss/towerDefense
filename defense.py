@@ -1,5 +1,6 @@
 import pygame
 import constants as const
+import time
 
 
 class Defense:
@@ -11,12 +12,15 @@ class Defense:
         self.width = width
         self.height = height
         self.level = 0
-        self.range = 30  # In pixels
+        self.damage = 25
+        self.range = const.CELL_WIDTH * 2.5  # In pixels
         self.upgrade_cost = []
         self.sell_cost = []
         self.placed = False
         self.selected = True
         self._level = _level
+        self.last_attack_time = time.time()
+        self.attack_speed = 0.5
 
     def draw(self, window):
         top_left_x = (self.x - self.width//2) * const.CELL_WIDTH
@@ -58,8 +62,19 @@ class Defense:
     def place(self):
         self.placed = True
 
+    def attack(self, enemies):
+        pass
+
     def upgrade(self):
         pass
 
     def sell(self):
         pass
+
+    def set_last_attack_time(self, t):
+        self.last_attack_time = t
+
+    def get_center_coordinates(self):
+        cx = self.x * const.CELL_WIDTH + const.CELL_WIDTH/2
+        cy = self.y * const.CELL_HEIGHT + const.CELL_HEIGHT/2
+        return cx, cy

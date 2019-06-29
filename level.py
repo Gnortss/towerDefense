@@ -41,8 +41,18 @@ class Level:
         self.paused_at = time.time()
         self.placing = None
 
-    def update(self):
+    def update(self, window):
+        if self.paused:
+            # update defenses last attack time so they don't start attacking right after unpause
+            for defense in self.defenses:
+                defense.set_last_attack_time(time.time())
+
         if not self.paused:
+
+            # Attack with defenses
+            for defense in self.defenses:
+                defense.attack(self.enemies)
+
             # Move enemies and delete the ones that are at the end of a path
             to_del = []
             for enemy in self.enemies:
@@ -51,12 +61,20 @@ class Level:
             for enemy in to_del:
                 self.enemies.remove(enemy)
                 self.lives -= 1
+            for defense in self.defenses:
+                if defense.type == DefenseType.TOWER:
+                    defense.check_projectile_collisions(self.enemies)
+
             # Check if we have to spawn an enemy
             self.spawn_next_enemy()
             print(self.lives)
+
         # Clip defense which the player is placing to the nearest cell
         if self.placing is not None:
             self.placing.move_to(*pygame.mouse.get_pos())
+
+        # Draw now
+        self.draw(window)
 
     def reset(self):
         with open(self.level_config_file) as file:
@@ -95,6 +113,13 @@ class Level:
         # Draw defense which is currently placing
         if self.placing is not None:
             self.placing.draw(window)
+
+    def hit(self, enemy, damage):
+        if enemy in self.enemies:
+            dead = enemy.hit(damage)
+            if dead:  # enemy was killed
+                # TODO: death animation
+                self.enemies.remove(enemy)
 
     def spawn_next_enemy(self):
         if self.enemies_spawned == 0 and time.time() - self.last_spawn_time < self.wait_before_spawning:
@@ -196,5 +221,4 @@ class Level:
         else:
             self.paused_at = time.time()
         self.paused = not self.paused
-
 
