@@ -12,3 +12,18 @@ Really basic tower defense in python using PyGame
     ```
     pip install -r requirements.txt
     ```
+
+## Game
+
+It starts at level selection. It can only display 8 levels. You can click on a level and it will start.
+Level will automatically end when you either finish all waves or run out of lives.
+
+#### Controls
+ - **1** - Basic tower
+ - **2** - Basic trap
+ - **P** - toggle pause/unpause
+ - **ESC** - Quit the game
+ 
+#### Custom levels
+You can create your level by copying *levels/level01.json* and customizing it to your liking.
+Number of waves or enemies is not limited.

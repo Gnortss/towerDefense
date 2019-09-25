@@ -1,3 +1,5 @@
+LEVEL_DIR = 'levels'
+
 # WIDTH and HEIGHT in pixels
 WINDOW_WIDTH = 1050
 WINDOW_HEIGHT = 800
