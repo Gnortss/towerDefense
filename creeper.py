@@ -8,7 +8,7 @@ class Creeper(Enemy):
     def __init__(self, x, y, width, height, path):
         super(Creeper, self).__init__(x, y, width, height, path)
 
-        self.img = pygame.image.load(os.path.join('images/enemies/', 'enemy.png')).convert_alpha()
+        self.img = pygame.image.load(os.path.join('images/enemies/', 'enemy.jpg')).convert_alpha()
         self.img = pygame.transform.scale(self.img, (width, height))
         self.imgs = [self.img]
 
